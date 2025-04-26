@@ -1,5 +1,7 @@
 import os
 import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import random
 from flask import Flask, request
 
 TOKEN = '7867244578:AAHYaQ-uG93U9XZ4zkfIjasrr_YJnxE2MPM'  # Обязательно поставь сюда токен своего бота
@@ -16,6 +18,42 @@ def send_welcome(message):
         "Пиши мне в любое время! 💬🌸"
     )
 
+# Список советов
+advices = [
+    "Не бойся начинать с нуля! Каждый день — новый шанс.",
+    "Будь собой, все остальные роли уже заняты.",
+    "Не забывай отдыхать, чтобы в следующий раз быть ещё более продуктивным!",
+    "Сделай что-то доброе для себя сегодня!",
+    "Каждый маленький шаг приближает тебя к цели."
+]
+
+@bot.message_handler(commands=['advice'])
+def send_advice(message):
+    # Выбираем случайный совет
+    advice = random.choice(advices)
+    
+    # Создаём кнопку для нового совета
+    markup = InlineKeyboardMarkup()
+    button = InlineKeyboardButton("Получить совет", callback_data="new_advice")
+    markup.add(button)
+    
+    # Отправляем совет и кнопку
+    bot.send_message(
+        message.chat.id, 
+        f"🌸 Совет для тебя: {advice}\n\nНажми кнопку, чтобы получить новый совет!", 
+        reply_markup=markup
+    )
+
+# Обработка нажатия на кнопку
+@bot.callback_query_handler(func=lambda call: call.data == "new_advice")
+def handle_new_advice(call):
+    advice = random.choice(advices)
+    bot.edit_message_text(
+        f"🌸 Новый совет для тебя: {advice}", 
+        call.message.chat.id, 
+        call.message.message_id,
+        reply_markup=call.message.reply_markup
+    )
 
 # Маршрут для Telegram Webhook
 @app.route('/' + TOKEN, methods=['POST'])
