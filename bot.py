@@ -9,7 +9,13 @@ app = Flask(__name__)
 # Обработчик команды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, "Приветик! Я GlowitaBot — твой весёлый помощник! 🌟")
+    bot.send_message(
+        message.chat.id,
+        "🌟 Привет, я GlowitaBot! 🌟\n\n"
+        "Я здесь, чтобы поддержать тебя, вдохновить и подсказать добрые советы! ✨\n"
+        "Пиши мне в любое время! 💬🌸"
+    )
+
 
 # Маршрут для Telegram Webhook
 @app.route('/' + TOKEN, methods=['POST'])
